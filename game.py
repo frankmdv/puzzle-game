@@ -16,5 +16,5 @@ result = tree.BFS(target_puzzle)
 end_time = time.time()
 
 result_time = end_time - start_time
-print(result.data)
+print(result.puzzle)
 print(result_time)
