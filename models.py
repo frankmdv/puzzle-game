@@ -41,9 +41,6 @@ class Search:
 
            closed_states.add(current_array)
 
-           print(current_array.expand())
-
-           time.sleep(3)
 
            for array in current_array.expand():
                if not array in closed_states:
@@ -51,7 +48,7 @@ class Search:
                    closed_states.add(array)
 
 
-class Puzzle(np.ndarray):
+class Puzzle:
     MOVEMENTS = {
         'UP': {
             'VALUE': (-1, 0),
@@ -72,45 +69,35 @@ class Puzzle(np.ndarray):
     }
 
 
-    def __new__(cls, array, movement=None):
-        obj = np.asarray(array).view(cls)
-        obj.movement = movement
-
-        return obj
-
-
-    def __init__(self, array, movement=None):
+    def __init__(self, table, movement=None):
+        self.table = table
         self.movement = movement
 
 
-    def __eq__(self, obj):
-        if isinstance(obj, np.ndarray):
-            return np.array_equal(self, obj)
+    def __eq__(self, puzzle):
+        return isinstance(puzzle, Puzzle) and np.array_equal(self.table, puzzle.table)
 
-        return super().__eq__(obj)
 
-    
     def __hash__(self):
-        return hash(self.tobytes())
+        return hash(self.table.tobytes())
 
 
     def get_pos_num(self, num):
-        row, column = np.where(self == num)
+        row, column = np.where(self.table == num)
         return row[0], column[0]
 
 
     def move_empty(self, movement, value_movement):
         row, column = self.get_pos_num(0)
-        n_rows, n_columns = self.shape
+        n_rows, n_columns = self.table.shape
         row_value, column_value = value_movement
         row_movement, column_movement = row + row_value, column + column_value
 
         if 0 <= row_movement < n_rows and 0 <= column_movement < n_columns:
-            new_array = self.copy()
-            new_array.movement = movement
-            new_array[row, column], new_array[row_movement, column_movement] = new_array[row_movement, column_movement], new_array[row, column]
+            new_table = self.table.copy()
+            new_table[row, column], new_table[row_movement, column_movement] = new_table[row_movement, column_movement], new_table[row, column]
 
-            return new_array
+            return Puzzle(new_table, movement)
 
         return None
 
