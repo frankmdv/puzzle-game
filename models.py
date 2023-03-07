@@ -1,5 +1,7 @@
-#from heapdict import heapdict
+from heapdict import heapdict
+from collections import deque
 import numpy as np
+import time 
 
 class Heuristics:
     @staticmethod
@@ -27,8 +29,26 @@ class Search:
 
 
     @staticmethod
-    def breadth_search():
-        pass
+    def breadth_search(initial_status, final_status):
+       open_states = deque([initial_status])
+       closed_states = set()
+
+       while open_states:
+           current_array = open_states.popleft()
+
+           if current_array == final_status:
+               return current_array
+
+           closed_states.add(current_array)
+
+           print(current_array.expand())
+
+           time.sleep(3)
+
+           for array in current_array.expand():
+               if not array in closed_states:
+                   open_states.append(array)
+                   closed_states.add(array)
 
 
 class Puzzle(np.ndarray):
@@ -58,26 +78,39 @@ class Puzzle(np.ndarray):
 
         return obj
 
+
     def __init__(self, array, movement=None):
         self.movement = movement
 
 
-    def _get_pos_num(self, num):
+    def __eq__(self, obj):
+        if isinstance(obj, np.ndarray):
+            return np.array_equal(self, obj)
+
+        return super().__eq__(obj)
+
+    
+    def __hash__(self):
+        return hash(self.tobytes())
+
+
+    def get_pos_num(self, num):
         row, column = np.where(self == num)
         return row[0], column[0]
 
 
     def move_empty(self, movement, value_movement):
-        row, column = self._get_pos_num(0)
+        row, column = self.get_pos_num(0)
         n_rows, n_columns = self.shape
         row_value, column_value = value_movement
         row_movement, column_movement = row + row_value, column + column_value
 
         if 0 <= row_movement < n_rows and 0 <= column_movement < n_columns:
             new_array = self.copy()
+            new_array.movement = movement
             new_array[row, column], new_array[row_movement, column_movement] = new_array[row_movement, column_movement], new_array[row, column]
 
-            return Puzzle(new_array, movement=movement)
+            return new_array
 
         return None
 
