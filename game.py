@@ -1,4 +1,5 @@
-from models import Puzzle, Node, Tree
+import numpy as np
+from models import Puzzle, Search
 import time
 
 initial_puzzle = Puzzle([[1, 2, 3],
@@ -9,12 +10,8 @@ target_puzzle = Puzzle([[8, 7, 6],
                         [5, 4, 3],
                         [2, 1, 0]])
 
-tree = Tree(Node(initial_puzzle))
+print(initial_puzzle.expand())
 
-start_time = time.time()
-result = tree.BFS(target_puzzle)
-end_time = time.time()
 
-result_time = end_time - start_time
-print(result.puzzle)
-print(result_time)
+def main_solve(initial_status, final_status=np.array([[1, 2, 3], [8, 0, 4], [7, 6 ,5]])):
+    return Search.a_star(initial_status, final_status)
