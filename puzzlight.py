@@ -50,14 +50,14 @@ def a_star(initial_puzzle, final_puzzle):
 
             if current_puzzle == final_puzzle:
                 break
-            else:
-                open_puzzles.pop(0)
 
-                for child_puzzle in current_puzzle.expand():
-                    if not child_puzzle in closed_puzzles:
-                        f = manhattan_dist(child_puzzle, final_puzzle) + child_puzzle.level
-                        open_puzzles.add((f, child_puzzle))
-                closed_puzzles.add(current_puzzle)
+            open_puzzles.pop(0)
+
+            for child_puzzle in current_puzzle.expand():
+                if not child_puzzle in closed_puzzles:
+                    f = manhattan_dist(child_puzzle, final_puzzle) + child_puzzle.level
+                    open_puzzles.add((f, child_puzzle))
+            closed_puzzles.add(current_puzzle)
 
     except NotSolvable as nt:
         print(nt)
