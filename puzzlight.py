@@ -2,6 +2,12 @@ import numpy as np
 from collections import deque
 from sortedcontainers import SortedListWithKey
 
+# Exceptions
+
+class NotSolvable(Exception):
+    def __init__(self, message):
+        self.message = message
+
 # Functions
 
 def is_solvable(puzzle):
@@ -34,54 +40,41 @@ def manhattan_dist(current_puzzle, final_puzzle):
 def a_star(initial_puzzle, final_puzzle):
     open_puzzles = SortedList([(0, initial_puzzle)], key=lambda x: x[0])
     closed_puzzles = set()
-    is_puzzle = False
 
-    while open_puzzles and not is_puzzle:
-        current_puzzle = open_puzzles[0]
+    try:
+        if not is_solvable(initial_puzzle):
+            raise NotSolvable('This puzzle is not solvable')
 
-        if current_puzzle == final_puzzle:
-            is_puzzle = True
-        else:
-            open_puzzles.pop(0)
+        while open_puzzles:
+            current_puzzle = open_puzzles.get(0)
 
-            for child_puzzle in current_puzzle.expand():
-                if not child_puzzle in closed_puzzles:
-                    f = manhattan_dist(child_puzzle, final_puzzle) + child_puzzle.level
-                    open_puzzles.add((f, child_puzzle))
-            closed_puzzles.add(current_puzzle)
+            if current_puzzle == final_puzzle:
+                break
+            else:
+                open_puzzles.pop(0)
+
+                for child_puzzle in current_puzzle.expand():
+                    if not child_puzzle in closed_puzzles:
+                        f = manhattan_dist(child_puzzle, final_puzzle) + child_puzzle.level
+                        open_puzzles.add((f, child_puzzle))
+                closed_puzzles.add(current_puzzle)
+
+    except NotSolvable as nt:
+        print(nt)
 
     return open_puzzles, closed_puzzles
 
 
-def breadth_search(initial_puzzle, final_puzzle):
-    open_puzzles = deque([initial_puzzle])
-    closed_puzzles = { initial_puzzle }
-
-    """
-    if not is_solvable(initial_puzzle):
-        return open_puzzles, closed_puzzles
-    """
-
-    while open_puzzles:
-        current_puzzle = open_puzzles.popleft()
-
-        if current_puzzle == final_puzzle:
-            print(len(open_puzzles), len(closed_puzzles))
-            return open_puzzles, closed_puzzles
-
-        for child_puzzle in current_puzzle.expand():
-            if not child_puzzle in closed_puzzles:
-                open_puzzles.append(child_puzzle)
-                closed_puzzles.add(child_puzzle)
-
 # Models 
+
 class SortedList(SortedListWithKey):
-    def __getitem__(self, index):
+
+    def get(self, index):
         return self._lists[0][index][1]
 
 
-    def __setitem__(self, index, value):
-        self._lists[0][index][1] = value
+    def __getitem__(self, index):
+        return self._lists[0][index][1].table
 
 
 class Puzzle:
