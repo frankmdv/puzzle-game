@@ -69,7 +69,7 @@ for i in range(iteraciones):
     print("Lanzando realizacion " + str(i+1) + ' de ' + str(iteraciones) + '...')
     
     # -------------------------------------------------------------------------
-    start_time = datetime.now()    
+    start_time = datetime.now()
     abiertos, cerrados = main_solve(CrearInicial())
     end_time = datetime.now()
     # -------------------------------------------------------------------------

@@ -22,7 +22,7 @@ def is_solvable(puzzle):
 
         return count
 
-    return False if count_inversions() % 2 == 0 else True
+    return count_inversions() % 2 != 0
 
 
 def manhattan_dist(current_puzzle, final_puzzle):
