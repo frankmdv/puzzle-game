@@ -1,3 +1,9 @@
+"""
+Created on Mon Feb 25 11:41:17 2023
+@author: Frank Mauricio Díaz Villar
+"""
+
+
 import numpy as np
 from puzzlight import a_star, Puzzle
 
